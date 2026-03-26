@@ -3,81 +3,103 @@ import librosa
 import numpy as np
 from tqdm import tqdm
 
-# CONFIG
-DATA_PATH = "processed_data"
 
-SAMPLE_RATE = 16000
-N_MELS = 128
-HOP_LENGTH = 512
-N_FFT = 2048
+class Config:
+    DATA_PATH = "processed_data"
+    OUTPUT_PATH = "features"
 
+    SAMPLE_RATE = 16000
+    N_MELS = 128
+    HOP_LENGTH = 512
+    N_FFT = 2048
 
-# STORAGE
-X = []
-y = []
-
-label_map = {
-    "real": 0,
-    "fake": 1
-}
-
-# FEATURE FUNCTION
-def extract_mel_spectrogram(file_path):
-    try:
-        audio, sr = librosa.load(file_path, sr=SAMPLE_RATE)
-
-        # Mel Spectrogram
-        mel_spec = librosa.feature.melspectrogram(
-            y=audio,
-            sr=sr,
-            n_fft=N_FFT,
-            hop_length=HOP_LENGTH,
-            n_mels=N_MELS
-        )
-
-        # Convert to log scale (VERY IMPORTANT)
-        mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
-
-        return mel_spec_db
-
-    except Exception as e:
-        print(f"Error: {file_path} -> {e}")
-        return None
+    LABEL_MAP = {
+        "real": 0,
+        "fake": 1
+    }
 
 
-# MAIN LOOP
-for label in ["real", "fake"]:
-    folder = os.path.join(DATA_PATH, label)
-    files = os.listdir(folder)
+class FeatureExtractor:
+    def __init__(self, config):
+        self.config = config
+        self.X = []
+        self.y = []
 
-    print(f"\nProcessing {label}...")
+    def extract_mel_spectrogram(self, file_path):
+        try:
+            audio, sr = librosa.load(file_path, sr=self.config.SAMPLE_RATE)
 
-    for file in tqdm(files):
-        file_path = os.path.join(folder, file)
+            mel_spec = librosa.feature.melspectrogram(
+                y=audio,
+                sr=sr,
+                n_fft=self.config.N_FFT,
+                hop_length=self.config.HOP_LENGTH,
+                n_mels=self.config.N_MELS
+            )
 
-        feature = extract_mel_spectrogram(file_path)
+            mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
 
-        if feature is None:
-            continue
+            return mel_spec_db
 
-        X.append(feature)
-        y.append(label_map[label])
+        except Exception as e:
+            print(f"Error processing {file_path}: {e}")
+            return None
+
+    def process_folder(self, label):
+        folder_path = os.path.join(self.config.DATA_PATH, label)
+
+        if not os.path.exists(folder_path):
+            print(f"Folder not found: {folder_path}")
+            return
+
+        files = os.listdir(folder_path)
+
+        print(f"\n📂 Processing '{label}' data...")
+
+        for file in tqdm(files):
+            file_path = os.path.join(folder_path, file)
+
+            feature = self.extract_mel_spectrogram(file_path)
+
+            if feature is None:
+                continue
+
+            self.X.append(feature)
+            self.y.append(self.config.LABEL_MAP[label])
+
+    def run(self):
+        for label in self.config.LABEL_MAP.keys():
+            self.process_folder(label)
+
+        self.X = np.array(self.X)
+        self.y = np.array(self.y)
+
+        self.X = self.X[..., np.newaxis]
+
+        print("\n📊 Feature Extraction Summary:")
+        print(f"X shape: {self.X.shape}")
+        print(f"y shape: {self.y.shape}")
+
+    def save(self):
+        os.makedirs(self.config.OUTPUT_PATH, exist_ok=True)
+
+        np.save(os.path.join(self.config.OUTPUT_PATH, "X.npy"), self.X)
+        np.save(os.path.join(self.config.OUTPUT_PATH, "y.npy"), self.y)
+
+        print("\n✅ Features saved successfully!")
 
 
-# CONVERT TO NUMPY
-X = np.array(X)
-y = np.array(y)
+def main():
+    print("🚀 Starting Feature Extraction Pipeline...")
 
-# Add channel dimension (for CNN)
-X = X[..., np.newaxis]
+    config = Config()
+    extractor = FeatureExtractor(config)
+
+    extractor.run()
+    extractor.save()
+
+    print("\n🎉 Feature extraction completed successfully!")
 
 
-# SAVE
-os.makedirs("features", exist_ok=True)
-
-np.save("features/X.npy", X)
-np.save("features/y.npy", y)
-
-print("\n✅ Feature extraction complete!")
-print(f"X shape: {X.shape}")
-print(f"y shape: {y.shape}")
+if __name__ == "__main__":
+    main()
