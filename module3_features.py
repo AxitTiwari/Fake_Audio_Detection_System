@@ -86,7 +86,7 @@ class FeatureExtractor:
         np.save(os.path.join(self.config.OUTPUT_PATH, "X.npy"), self.X)
         np.save(os.path.join(self.config.OUTPUT_PATH, "y.npy"), self.y)
 
-        print("\n✅ Features saved successfully!")
+        print("\nFeature saved to disk:")
 
 
 def main():
