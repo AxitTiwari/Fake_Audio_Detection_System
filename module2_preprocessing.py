@@ -8,7 +8,7 @@ from tqdm import tqdm
 INPUT_PATH = "cleaned_data"
 OUTPUT_PATH = "processed_data"
 
-TARGET_SR = 16000
+TARGET_SR = 16000  # seconds
 TARGET_DURATION = 4 
 TARGET_LENGTH = TARGET_SR * TARGET_DURATION
 
@@ -75,4 +75,6 @@ for label in ["real", "fake"]:
 
         sf.write(save_path, processed_audio, TARGET_SR)
 
-print("\n✅ Preprocessing Complete!")
+
+if __name__ == "__main__":
+    print("\n✅ Preprocessing Complete!")
