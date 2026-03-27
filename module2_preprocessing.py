@@ -9,7 +9,7 @@ INPUT_PATH = "cleaned_data"
 OUTPUT_PATH = "processed_data"
 
 TARGET_SR = 16000
-TARGET_DURATION = 4  # seconds
+TARGET_DURATION = 4 
 TARGET_LENGTH = TARGET_SR * TARGET_DURATION
 
 os.makedirs(OUTPUT_PATH, exist_ok=True)
