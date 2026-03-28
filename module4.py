@@ -10,23 +10,17 @@ from sklearn.metrics import classification_report, confusion_matrix, ConfusionMa
 from tensorflow.keras import layers, models
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
-# ==============================
-# CONFIG
-# ==============================
+
 FEATURE_PATH = "features"
 MODEL_PATH = "model/model.keras"   # ✅ better format
 
 EPOCHS = 25
 BATCH_SIZE = 32
 
-# ==============================
-# CREATE MODEL FOLDER
-# ==============================
 os.makedirs("model", exist_ok=True)
 
-# ==============================
-# GPU OPTIMIZATION
-# ==============================
+
+
 gpus = tf.config.list_physical_devices('GPU')
 if gpus:
     try:
@@ -36,9 +30,7 @@ if gpus:
     except:
         pass
 
-# ==============================
-# LOAD DATA
-# ==============================
+
 print("\nLoading data...")
 
 X = np.load(os.path.join(FEATURE_PATH, "X.npy"))
@@ -54,25 +46,20 @@ print("y shape:", y.shape)
 # Save normalization value (IMPORTANT)
 np.save("model/max_value.npy", max_val)
 
-# ==============================
-# SPLIT
-# ==============================
+
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-# ==============================
-# TF.DATA PIPELINE
-# ==============================
 train_ds = tf.data.Dataset.from_tensor_slices((X_train, y_train)) \
     .shuffle(1000).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
 val_ds = tf.data.Dataset.from_tensor_slices((X_test, y_test)) \
     .batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
-# ==============================
+
 # MODEL
-# ==============================
+
 def build_model(input_shape):
     model = models.Sequential([
         layers.Conv2D(32, (3,3), activation='relu', input_shape=input_shape),
@@ -98,9 +85,9 @@ def build_model(input_shape):
 
 model = build_model(X.shape[1:])
 
-# ==============================
+
 # COMPILE
-# ==============================
+
 model.compile(
     optimizer=tf.keras.optimizers.Adam(0.0005),
     loss='binary_crossentropy',
@@ -109,17 +96,13 @@ model.compile(
 
 model.summary()
 
-# ==============================
-# CALLBACKS (NO CHECKPOINT)
-# ==============================
+
 callbacks = [
     EarlyStopping(patience=5, restore_best_weights=True),
     ReduceLROnPlateau(factor=0.3, patience=3, verbose=1)
 ]
 
-# ==============================
-# TRAIN
-# ==============================
+
 print("\nTraining model...")
 
 history = model.fit(
@@ -129,15 +112,13 @@ history = model.fit(
     callbacks=callbacks
 )
 
-# ==============================
-# SAVE MODEL MANUALLY ✅
-# ==============================
+
 model.save(MODEL_PATH)
 print("✅ Model saved at:", MODEL_PATH)
 
-# ==============================
+
 # EVALUATION
-# ==============================
+
 print("\nEvaluating model...")
 
 loss, accuracy = model.evaluate(val_ds)
@@ -147,24 +128,24 @@ print(f"\nTest Accuracy: {accuracy:.4f}")
 y_pred_probs = model.predict(val_ds)
 y_pred = (y_pred_probs > 0.5).astype("int32")
 
-# ==============================
+
 # REPORT
-# ==============================
+
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred, target_names=["Real", "Fake"]))
 
-# ==============================
+
 # CONFUSION MATRIX
-# ==============================
+
 cm = confusion_matrix(y_test, y_pred)
 
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Real", "Fake"])
 disp.plot()
 plt.show()
 
-# ==============================
+
 # TRAINING GRAPHS
-# ==============================
+
 plt.plot(history.history['accuracy'], label='Train')
 plt.plot(history.history['val_accuracy'], label='Val')
 plt.title("Accuracy")
@@ -177,9 +158,8 @@ plt.title("Loss")
 plt.legend()
 plt.show()
 
-# ==============================
 # PREDICTION FUNCTION
-# ==============================
+
 def predict_audio(file_path):
     print("\nPredicting:", file_path)
 
@@ -208,7 +188,7 @@ def predict_audio(file_path):
     else:
         print(f"Real Voice (Confidence: {1 - prediction:.2f})")
 
-# ==============================
+
 # TEST
-# ==============================
+
 predict_audio("processed_data/real/sample.wav")
