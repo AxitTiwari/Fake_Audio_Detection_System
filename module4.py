@@ -12,7 +12,7 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 
 FEATURE_PATH = "features"
-MODEL_PATH = "model/model.keras"   # ✅ better format
+MODEL_PATH = "model/model.keras"   
 
 EPOCHS = 25
 BATCH_SIZE = 32
