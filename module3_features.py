@@ -3,7 +3,6 @@ import librosa
 import numpy as np
 from tqdm import tqdm
 
-
 class Config:
     DATA_PATH = "processed_data"
     OUTPUT_PATH = "features"
