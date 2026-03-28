@@ -8,16 +8,21 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 
 from tensorflow.keras import layers, models
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 # ==============================
 # CONFIG
 # ==============================
 FEATURE_PATH = "features"
-MODEL_PATH = "model/model.h5"
+MODEL_PATH = "model/model.keras"   # ✅ better format
 
 EPOCHS = 25
 BATCH_SIZE = 32
+
+# ==============================
+# CREATE MODEL FOLDER
+# ==============================
+os.makedirs("model", exist_ok=True)
 
 # ==============================
 # GPU OPTIMIZATION
@@ -39,11 +44,15 @@ print("\nLoading data...")
 X = np.load(os.path.join(FEATURE_PATH, "X.npy"))
 y = np.load(os.path.join(FEATURE_PATH, "y.npy"))
 
-# Normalize (VERY IMPORTANT)
-X = X / np.max(X)
+# Normalize
+max_val = np.max(X)
+X = X / max_val
 
 print("X shape:", X.shape)
 print("y shape:", y.shape)
+
+# Save normalization value (IMPORTANT)
+np.save("model/max_value.npy", max_val)
 
 # ==============================
 # SPLIT
@@ -53,7 +62,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # ==============================
-# TF.DATA PIPELINE (FASTER)
+# TF.DATA PIPELINE
 # ==============================
 train_ds = tf.data.Dataset.from_tensor_slices((X_train, y_train)) \
     .shuffle(1000).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
@@ -93,7 +102,7 @@ model = build_model(X.shape[1:])
 # COMPILE
 # ==============================
 model.compile(
-    optimizer=tf.keras.optimizers.Adam(0.0005),  # lower LR improves stability
+    optimizer=tf.keras.optimizers.Adam(0.0005),
     loss='binary_crossentropy',
     metrics=['accuracy']
 )
@@ -101,11 +110,10 @@ model.compile(
 model.summary()
 
 # ==============================
-# CALLBACKS
+# CALLBACKS (NO CHECKPOINT)
 # ==============================
 callbacks = [
     EarlyStopping(patience=5, restore_best_weights=True),
-    ModelCheckpoint(MODEL_PATH, save_best_only=True),
     ReduceLROnPlateau(factor=0.3, patience=3, verbose=1)
 ]
 
@@ -120,6 +128,12 @@ history = model.fit(
     epochs=EPOCHS,
     callbacks=callbacks
 )
+
+# ==============================
+# SAVE MODEL MANUALLY ✅
+# ==============================
+model.save(MODEL_PATH)
+print("✅ Model saved at:", MODEL_PATH)
 
 # ==============================
 # EVALUATION
@@ -164,7 +178,7 @@ plt.legend()
 plt.show()
 
 # ==============================
-# PREDICTION FUNCTION (FIXED)
+# PREDICTION FUNCTION
 # ==============================
 def predict_audio(file_path):
     print("\nPredicting:", file_path)
@@ -174,15 +188,16 @@ def predict_audio(file_path):
     mel = librosa.feature.melspectrogram(y=audio, sr=sr)
     mel_db = librosa.power_to_db(mel, ref=np.max)
 
-    # Resize safely
+    # Resize
     if mel_db.shape[1] < 128:
         pad_width = 128 - mel_db.shape[1]
         mel_db = np.pad(mel_db, ((0,0),(0,pad_width)), mode='constant')
     else:
         mel_db = mel_db[:, :128]
 
-    # Normalize same as training
-    mel_db = mel_db / np.max(mel_db)
+    # Load SAME normalization value
+    max_val = np.load("model/max_value.npy")
+    mel_db = mel_db / max_val
 
     mel_db = mel_db[np.newaxis, ..., np.newaxis]
 
@@ -193,8 +208,7 @@ def predict_audio(file_path):
     else:
         print(f"Real Voice (Confidence: {1 - prediction:.2f})")
 
-
 # ==============================
-# TEST PREDICTION
+# TEST
 # ==============================
 predict_audio("processed_data/real/sample.wav")
