@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deepfake Voice Detector</title>
+</head>
+<body style="text-align:center; font-family:sans-serif;">
+
+    <h1>🎙️ Deepfake Voice Detection</h1>
+
+    <form action="/predict" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".wav" required>
+        <br><br>
+        <button type="submit">Predict</button>
+    </form>
+
+    {% if result %}
+        <h2 style="margin-top:20px;">Result: {{ result }}</h2>
+    {% endif %}
+
+</body>
+</html>

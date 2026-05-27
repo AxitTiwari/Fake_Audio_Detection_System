@@ -1,0 +1,125 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI';
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.container {
+    backdrop-filter: blur(15px);
+    background: rgba(255,255,255,0.1);
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    width: 400px;
+    animation: fadeIn 1s ease;
+}
+
+h1 {
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 14px;
+    opacity: 0.7;
+    margin-bottom: 20px;
+}
+
+.upload-box {
+    display: block;
+    border: 2px dashed #00c6ff;
+    padding: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    transition: 0.3s;
+}
+
+.upload-box:hover {
+    background: rgba(0,198,255,0.2);
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    background: #00c6ff;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #0072ff;
+    transform: scale(1.05);
+}
+
+.audio-player {
+    margin-top: 15px;
+}
+
+.result-box {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    animation: slideUp 0.5s ease;
+}
+
+.result-box.real {
+    background: rgba(0,255,0,0.2);
+}
+
+.result-box.fake {
+    background: rgba(255,0,0,0.2);
+}
+
+.bar {
+    height: 15px;
+    background: #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.fill {
+    height: 100%;
+    background: limegreen;
+    width: 0;
+    animation: grow 1s forwards;
+}
+
+.loader {
+    border: 5px solid #ccc;
+    border-top: 5px solid #00c6ff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin: 20px auto;
+    animation: spin 1s linear infinite;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Animations */
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes grow {
+    from { width: 0; }
+}

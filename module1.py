@@ -6,26 +6,23 @@ import pandas as pd
 from tqdm import tqdm
 
 # CONFIG
-RAW_DATA_PATH = "raw_data"
+INPUT_PATH = r"C:\Users\ARPIT CHAMOLI\OneDrive\Desktop\audio_project\raw_data"
 CLEAN_DATA_PATH = "cleaned_data"
 METADATA_PATH = "metadata/metadata.csv"
 
 TARGET_SR = 16000
 MAX_AMPLITUDE = 0.99
-SILENCE_THRESHOLD = 0.01   # very important
+SILENCE_THRESHOLD = 0.01  
 
 os.makedirs(CLEAN_DATA_PATH, exist_ok=True)
 os.makedirs("metadata", exist_ok=True)
 
-# HELPER FUNCTIONS
 def is_silent(audio):
-    """Check if audio is silent"""
     rms = np.sqrt(np.mean(audio**2))
     return rms < SILENCE_THRESHOLD
 
 
 def normalize_audio(audio):
-    """Normalize peak amplitude to 0.99"""
     max_val = np.max(np.abs(audio))
     if max_val == 0:
         return audio
@@ -33,15 +30,12 @@ def normalize_audio(audio):
 
 
 def process_file(file_path):
-    """Load and clean audio"""
     try:
         audio, sr = librosa.load(file_path, sr=TARGET_SR, mono=True)
 
-        # Remove silent files
+       
         if is_silent(audio):
             return None
-
-        # Normalize
         audio = normalize_audio(audio)
 
         duration = len(audio) / TARGET_SR
@@ -53,12 +47,10 @@ def process_file(file_path):
         return None
 
 
-
-# MAIN PIPELINE
 metadata = []
 
 for label in ["real", "fake"]:
-    input_folder = os.path.join(RAW_DATA_PATH, label)
+    input_folder = os.path.join(INPUT_PATH, label)
     output_folder = os.path.join(CLEAN_DATA_PATH, label)
 
     os.makedirs(output_folder, exist_ok=True)
@@ -77,22 +69,17 @@ for label in ["real", "fake"]:
 
         audio, duration = result
 
-        # Save cleaned file
         new_filename = f"{label}_{i}.wav"
         save_path = os.path.join(output_folder, new_filename)
 
         sf.write(save_path, audio, TARGET_SR)
 
-        # Store metadata
         metadata.append({
             "file_path": save_path,
             "label": label,
             "duration": duration,
             "sample_rate": TARGET_SR
         })
-
-
-# SAVE METADATA
 df = pd.DataFrame(metadata)
 df.to_csv(METADATA_PATH, index=False)
 

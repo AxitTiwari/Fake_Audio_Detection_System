@@ -1,4 +1,5 @@
 file_path,label,duration,sample_rate
+<<<<<<< HEAD
 cleaned_data\real\real_0.wav,real,5.855,16000
 cleaned_data\real\real_1.wav,real,4.815,16000
 cleaned_data\real\real_2.wav,real,5.6,16000
@@ -3681,3 +3682,16 @@ cleaned_data\fake\fake_1016.wav,fake,67.3698125,16000
 cleaned_data\fake\fake_1017.wav,fake,48.79675,16000
 cleaned_data\fake\fake_1018.wav,fake,55.40575,16000
 cleaned_data\fake\fake_1019.wav,fake,48.0914375,16000
+=======
+cleaned_data\fake\fake_0.wav,fake,5.7991875,16000
+cleaned_data\fake\fake_1.wav,fake,2.3510625,16000
+cleaned_data\fake\fake_2.wav,fake,3.6571875,16000
+cleaned_data\fake\fake_3.wav,fake,3.7094375,16000
+cleaned_data\fake\fake_4.wav,fake,2.376,16000
+cleaned_data\fake\fake_5.wav,fake,3.408,16000
+cleaned_data\fake\fake_6.wav,fake,2.736,16000
+cleaned_data\fake\fake_7.wav,fake,2.352,16000
+cleaned_data\fake\fake_8.wav,fake,3.048,16000
+cleaned_data\fake\fake_9.wav,fake,3.336,16000
+cleaned_data\fake\fake_10.wav,fake,3.096,16000
+>>>>>>> a8ad2f64d29a0ec0b3448dfdad711ae45fcac871

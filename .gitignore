@@ -1,0 +1,57 @@
+# =========================
+# DATASETS & GENERATED DATA
+# =========================
+cleaned_data/
+features/
+processed_data/
+raw_data/
+raw_data.zip
+uploads/
+
+# =========================
+# AUDIO / VIDEO FILES
+# =========================
+*.wav
+*.mp3
+*.mp4
+*.mpeg
+
+# =========================
+# MACHINE LEARNING MODELS
+# =========================
+model/
+*.h5
+*.pth
+*.pt
+*.pkl
+*.keras
+*.npy
+
+# =========================
+# PYTHON CACHE
+# =========================
+__pycache__/
+*.pyc
+
+# =========================
+# JUPYTER
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# VIRTUAL ENVIRONMENTS
+# =========================
+venv/
+env/
+
+# =========================
+# IDE SETTINGS
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# OS FILES
+# =========================
+.DS_Store
+Thumbs.db

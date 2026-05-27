@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Voice Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🎙️ AI Voice Detector</h1>
+    <p class="subtitle">Real vs Deepfake Voice Detection</p>
+
+    <form id="uploadForm" action="/predict" method="post" enctype="multipart/form-data">
+        <label class="upload-box">
+            <input type="file" name="file" required hidden>
+            <span>📁 Upload Audio (.wav)</span>
+        </label>
+
+        <button type="submit">Analyze</button>
+    </form>
+
+    <!-- Loading -->
+    <div id="loader" class="loader hidden"></div>
+
+    {% if filename %}
+        <audio controls class="audio-player">
+            <source src="{{ url_for('static', filename=filename) }}" type="audio/wav">
+        </audio>
+    {% endif %}
+
+    {% if result %}
+        <div class="result-box {{ result|lower }}">
+            <h2>{{ result }}</h2>
+
+            <div class="bar">
+                <div class="fill" style="width: {{ confidence }}%"></div>
+            </div>
+
+            <p>{{ confidence }}% Confidence</p>
+        </div>
+    {% endif %}
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
