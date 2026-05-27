@@ -19,7 +19,6 @@ uploads/
 # =========================
 # MACHINE LEARNING MODELS
 # =========================
-model/
 *.h5
 *.pth
 *.pt
